@@ -12,7 +12,7 @@ Lets you view and configure points for VRChat camera paths. Currently very WIP
 
 ## Planned features
 
-- Import points alongside existing oens
+- Import points alongside existing ones
 - Internationalization
 
 __                                          __
