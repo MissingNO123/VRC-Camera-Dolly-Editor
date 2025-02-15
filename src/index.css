@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@500&family=JetBrains+Mono&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* For AppBar */
+.draggable {
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+  }
+
+.undraggable {
+    -webkit-app-region: no-drag;
+  }
+
+.json pre {
+  font-family: "JetBrains Mono", monospace;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+body {
+  font-family: 'Dosis', sans-serif;
+  height: 100vh;
+}
+
+@layer base {
+  code {
+    @apply mx-2 rounded bg-gray-200 px-1 py-0.5 dark:bg-gray-700;
+  }
+
+  .root {
+    @apply min-h-screen dark:bg-gray-800 dark:text-gray-200;
+  }
+}
