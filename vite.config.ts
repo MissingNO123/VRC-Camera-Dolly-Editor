@@ -5,6 +5,7 @@ import { join } from 'path';
 import electron from 'vite-plugin-electron';
 import renderer from 'vite-plugin-electron-renderer';
 import pkg from './package.json';
+import { input } from '@material-tailwind/react';
 
 const root = join(__dirname);
 const srcRoot = join(__dirname, 'src');
@@ -66,6 +67,7 @@ export default ({ command }: ConfigEnv): UserConfig => {
   if (command === 'serve') {
     return {
       root: srcRoot,
+      publicDir: join(srcRoot, 'public'),
       base: '/',
       plugins: plugins(true),
       resolve: {
@@ -76,7 +78,12 @@ export default ({ command }: ConfigEnv): UserConfig => {
       build: {
         outDir: join(root, '/dist-vite'),
         emptyOutDir: true,
-        rollupOptions: {}
+        rollupOptions: {
+          input: {
+            main: join(srcRoot, 'index.html'),
+            viewport: join(srcRoot, 'viewport.html')
+          }
+        }
       },
       server: {
         port: process.env.PORT === undefined ? 3000 : +process.env.PORT
@@ -89,6 +96,7 @@ export default ({ command }: ConfigEnv): UserConfig => {
   // PROD
   return {
     root: srcRoot,
+    publicDir: join(srcRoot, 'public'),
     base: './',
     plugins: plugins(false),
     resolve: {
@@ -99,7 +107,12 @@ export default ({ command }: ConfigEnv): UserConfig => {
     build: {
       outDir: join(root, '/dist-vite'),
       emptyOutDir: true,
-      rollupOptions: {}
+      rollupOptions: {
+        input: {
+          main: join(srcRoot, 'index.html'),
+          viewport: join(srcRoot, 'viewport.html')
+        }
+      }
     },
     server: {
       port: process.env.PORT === undefined ? 3000 : +process.env.PORT
