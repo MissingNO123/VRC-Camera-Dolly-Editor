@@ -44,7 +44,9 @@ function createMainWindow() {
     window?.loadFile(url);
   }
   // Open the DevTools.
-  // window.webContents.openDevTools();
+  if (isDev) {
+    window.webContents.openDevTools();
+  }
 
   // For AppBar
   ipcMain.on('minimize', () => {
@@ -92,7 +94,9 @@ function create3DViewportWindow () {
     window?.loadFile(url);
   }
   // Open the DevTools.
-  // window.webContents.openDevTools();
+  if (isDev) {
+    window.webContents.openDevTools();
+  }
 
   window.on('closed', () => {
     viewport3dWindow = null;
