@@ -99,11 +99,10 @@ const OriginAxes = () => (
 );
 
 function cameraViewAll(cameraRef: React.MutableRefObject<BabylonFreeCamera | null>, paths: DollyPath[]) {
-    console.log("Viewing all paths");
+    console.log("Recentering view to all paths");
     if (!cameraRef.current) return;
     console.log(paths[0])
     const pathOnePointOnePos = new Vector3(paths[0].Points[0].Position.X, paths[0].Points[0].Position.Y, paths[0].Points[0].Position.Z);
-    console.log("Path 1 Point 1: " + pathOnePointOnePos);
     let min = pathOnePointOnePos.clone();
     let max = pathOnePointOnePos.clone();
     

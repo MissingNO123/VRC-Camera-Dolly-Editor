@@ -19,6 +19,8 @@ Lets you view and configure points for VRChat camera paths. Currently very WIP
 - Directly editing points in 3D view
 - Localization(?)
 - Connect OSC to remote devices (i.e. Quest)
+- Previewing Loose and Fitted curve types
+- Auto-import when VRChat exports
   
 ## Screenshots
 ![image](https://github.com/user-attachments/assets/e8681096-0342-45f1-a778-1ab0f5b33e67)
