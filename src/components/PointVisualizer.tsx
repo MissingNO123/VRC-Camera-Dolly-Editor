@@ -92,9 +92,9 @@ const CameraPath = ({ points, color }: { points: DollyPoint[], color: Color3 }) 
 }
 const OriginAxes = () => (
     <>
-        <lines name="x-axis" points={[Vector3.Zero(), new Vector3(1, 0, 0)]} color={Color3.Red()} updatable={false} />
-        <lines name="y-axis" points={[Vector3.Zero(), new Vector3(0, 1, 0)]} color={Color3.Green()} updatable={false} />
-        <lines name="z-axis" points={[Vector3.Zero(), new Vector3(0, 0, 1)]} color={Color3.Blue()} updatable={false} />
+        <lines name="x-axis" points={[Vector3.Zero(), new Vector3(1, 0, 0)]} color={Color3.Red()} updatable={true} />
+        <lines name="y-axis" points={[Vector3.Zero(), new Vector3(0, 1, 0)]} color={Color3.Green()} updatable={true} />
+        <lines name="z-axis" points={[Vector3.Zero(), new Vector3(0, 0, 1)]} color={Color3.Blue()} updatable={true} />
     </>
 );
 
@@ -166,13 +166,19 @@ const BabylonScene: FC = () => { // Have local state for the points (or any data
     const isCameraConfiguredYet = React.useRef(false);
     const shouldRecenterCamera = React.useRef(true);
     const pathsChangedSinceLastRecenter = React.useRef(false);
+    const [showOriginAxes, setShowOriginAxes] = React.useState(false);
 
     const pathColors = [
-        Color3.Teal(),
-        Color3.Yellow(),
-        Color3.Purple(),
-        Color3.Magenta(),
-        Color3.White()
+        Color3.FromHexString("#37b2f9"), // light blue
+        Color3.FromHexString("#fbed4f"), // yellow
+        Color3.FromHexString("#7650ff"), // violet
+        Color3.FromHexString("#fb4685"), // pink
+        Color3.FromHexString("#92f763"), // light green
+        Color3.FromHexString("#ff9c39"), // orange
+        Color3.FromHexString("#FF8EFF"), // pinker
+        Color3.FromHexString("#02FFD1"), // aquamarine
+        Color3.White(),
+        Color3.Gray(),
     ];
 
     const resetCamera = () => {
@@ -226,6 +232,10 @@ const BabylonScene: FC = () => { // Have local state for the points (or any data
             if (event.key === 'f') {
                 cameraViewAll(cameraRef, pathsRef.current);
             }
+            if (event.key === 'o') {
+                console.log("Toggling origin axes " + showOriginAxes);
+                setShowOriginAxes(prev => !prev);
+            }
         }
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
@@ -270,7 +280,7 @@ const BabylonScene: FC = () => { // Have local state for the points (or any data
                         position={new Vector3(-1, 1, -1)}
                     />
                     {/* <hemisphericLight name="light1" intensity={0.7} direction={Vector3.Up()} /> */}
-                    <OriginAxes />
+                    {showOriginAxes && <OriginAxes />}
                     <utilityLayerRenderer>
                         {
                             // draw all points for all paths
