@@ -106,8 +106,10 @@ const OriginAxes = () => (
 
 function cameraViewAll(cameraRef: React.MutableRefObject<BabylonFreeCamera | null>, paths: DollyPath[]) {
     if (!cameraRef.current) return;
-    let min = new Vector3(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
-    let max = new Vector3(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
+    const pathOnePointOnePos = new Vector3(paths[0].Points[0].Position.X, paths[0].Points[0].Position.Y, paths[0].Points[0].Position.Z);
+    let min = pathOnePointOnePos.clone();
+    let max = pathOnePointOnePos.clone();
+    
     paths.forEach(path => {
         path.Points.forEach(point => {
             min.x = Math.min(min.x, point.Position.X);
@@ -118,6 +120,7 @@ function cameraViewAll(cameraRef: React.MutableRefObject<BabylonFreeCamera | nul
             max.z = Math.max(max.z, point.Position.Z);
         });
     });
+
     let center = Vector3.Center(min, max);
     let distance = Vector3.Distance(min, max);
     cameraRef.current.position = center.add(new Vector3(0, distance / 2, distance));
@@ -179,10 +182,10 @@ const BabylonScene: FC = () => { // Have local state for the points (or any data
                         name="camera1"
                         ref={(camera) => {
                             if (!isCameraConfiguredYet.current) {
-                                if (camera) {
+                                if (camera && paths.length > 0) {
                                     cameraRef.current = camera;
                                     configureCamera(cameraRef);
-                                    cameraRef.current.setTarget(Vector3.Zero());
+                                    cameraViewAll(cameraRef, paths);
                                     isCameraConfiguredYet.current = true;
                                 }
                             }
