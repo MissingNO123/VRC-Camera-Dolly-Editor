@@ -24,7 +24,7 @@ const PointsEditor: React.FC<DollyPath> = (path) => {
             <h2 className="text-xl font-semibold">Path {path.Index+1}</h2>
             {path.Points.map((point: DollyPoint) => (
                 <PointControl
-                    key={point.Index}
+                    key={`${path.Index}:${point.Index}`}
                     point={point}
                     pathIndex={path.Index}
                 />
