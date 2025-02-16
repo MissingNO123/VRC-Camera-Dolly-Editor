@@ -231,6 +231,7 @@ const api = {
   openViewportWindow: async () => await ipcRenderer.invoke('3d:open-viewport-window'),
   doesViewportWindowExist: async () => await ipcRenderer.invoke('3d:does-viewport-window-exist'),
   sendPaths: (paths: any) => ipcRenderer.invoke('3d:send-paths', paths),
+  refresh3dViewport: () => ipcRenderer.invoke('3d:refresh-viewport'),
 
   /**
    * Provide an easier way to listen to events

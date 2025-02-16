@@ -233,4 +233,10 @@ ipcMain.handle('3d:send-paths', (_, paths) => {
   viewport3dWindow?.webContents.send('3d:receive-paths', paths);
 });
 
+ipcMain.handle('3d:refresh-viewport', () => {
+  if (!viewport3dWindow) { return; }
+  console.log('Refreshing 3D Viewport');
+  viewport3dWindow?.webContents.send('3d:refresh-viewport');
+});
+
 // #endregion

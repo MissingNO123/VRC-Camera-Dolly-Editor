@@ -10,7 +10,11 @@ const api = {
     onUpdatePoints: (callback: (paths: any) => void) => {
         ipcRenderer.on("3d:receive-paths", (_event, paths) =>
             callback(paths));
-    }
+    },
+    onRefreshViewport: (callback: () => void) => 
+        ipcRenderer.on("3d:refresh-viewport", callback)
 };
+
+
 
 contextBridge.exposeInMainWorld('ThreeDViewport', api);

@@ -79,6 +79,7 @@ function App() {
                 setCameraPaths(paths);
                 setFilePath(result.filePath);
                 setFileOpen(true);
+                window.Main.refresh3dViewport();
             } catch (error) {
                 console.error('Invalid JSON file:', error);
             }
