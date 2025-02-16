@@ -36,6 +36,7 @@ const GizmoBox = ({ position, color }: { position: Vector3, color: Color3 }) => 
 );
 
 const deg2Rad = Math.PI / 180;
+const rad2deg = 180 / Math.PI;
 
 const CameraPoint = ({ position, rotation, color }: { position: Vector3, rotation: Vector3, color: Color3 }) => {
     const forwards = new Vector3(0, 0, 1);
@@ -89,24 +90,20 @@ const CameraPath = ({ points, color }: { points: DollyPoint[], color: Color3 }) 
         <lines key={JSON.stringify(pathCoordinates)} name="camera-path" points={pathCoordinates} color={color} updatable={true} />
     )
 }
-
 const OriginAxes = () => (
     <>
-        <tube name="x-axis" radius={0.005} tessellation={4} cap={3} path={[Vector3.Zero(), new Vector3(1, 0, 0)]}>
-            <standardMaterial name="x-axis-mat" diffuseColor={Color3.Red()} specularColor={Color3.Black()} />
-        </tube>
-        <tube name="y-axis" radius={0.005} tessellation={4} cap={3} path={[Vector3.Zero(), new Vector3(0, 1, 0)]}>
-            <standardMaterial name="y-axis-mat" diffuseColor={Color3.Green()} specularColor={Color3.Black()} />
-        </tube>
-        <tube name="z-axis" radius={0.005} tessellation={4} cap={3} path={[Vector3.Zero(), new Vector3(0, 0, 1)]}>
-            <standardMaterial name="z-axis-mat" diffuseColor={Color3.Blue()} specularColor={Color3.Black()} />
-        </tube>
+        <lines name="x-axis" points={[Vector3.Zero(), new Vector3(1, 0, 0)]} color={Color3.Red()} updatable={false} />
+        <lines name="y-axis" points={[Vector3.Zero(), new Vector3(0, 1, 0)]} color={Color3.Green()} updatable={false} />
+        <lines name="z-axis" points={[Vector3.Zero(), new Vector3(0, 0, 1)]} color={Color3.Blue()} updatable={false} />
     </>
 );
 
 function cameraViewAll(cameraRef: React.MutableRefObject<BabylonFreeCamera | null>, paths: DollyPath[]) {
+    console.log("Viewing all paths");
     if (!cameraRef.current) return;
+    console.log(paths[0])
     const pathOnePointOnePos = new Vector3(paths[0].Points[0].Position.X, paths[0].Points[0].Position.Y, paths[0].Points[0].Position.Z);
+    console.log("Path 1 Point 1: " + pathOnePointOnePos);
     let min = pathOnePointOnePos.clone();
     let max = pathOnePointOnePos.clone();
     
@@ -125,6 +122,14 @@ function cameraViewAll(cameraRef: React.MutableRefObject<BabylonFreeCamera | nul
     let distance = Vector3.Distance(min, max);
     cameraRef.current.position = center.add(new Vector3(0, distance / 2, distance));
     cameraRef.current.setTarget(center);
+
+    console.log("Camera pos/rot: " + cameraRef.current.position + " " +
+      new Vector3(
+        cameraRef.current.rotation.x * rad2deg,
+        cameraRef.current.rotation.y * rad2deg,
+        cameraRef.current.rotation.z * rad2deg
+      )
+    );
 }
 
 const configureCamera = (cameraRef: React.MutableRefObject<BabylonFreeCamera | null>) => {
@@ -155,24 +160,94 @@ const configureCamera = (cameraRef: React.MutableRefObject<BabylonFreeCamera | n
 
 const BabylonScene: FC = () => { // Have local state for the points (or any data passed from the main window) 
     const paths: DollyPath[] = useStore(state => state.paths);
+    const pathsRef = React.useRef<DollyPath[]>(paths);
     const setPaths = useStore(state => state.setPaths);
     const cameraRef = React.useRef<BabylonFreeCamera | null>(null);
     const isCameraConfiguredYet = React.useRef(false);
+    const shouldRecenterCamera = React.useRef(true);
+    const pathsChangedSinceLastRecenter = React.useRef(false);
 
-    // Listen for updates using the exposed Babylon API from our preload. 
+    const pathColors = [
+        Color3.Teal(),
+        Color3.Yellow(),
+        Color3.Purple(),
+        Color3.Magenta(),
+        Color3.White()
+    ];
+
+    const resetCamera = () => {
+        console.log("Resetting Camera");
+        if (cameraRef.current) {
+            cameraRef.current.rotation = new Vector3(0, 0, 0);
+            cameraRef.current.position = new Vector3(-1, 1, -1);
+            cameraRef.current.setTarget(Vector3.Zero());
+            console.log("Camera pos/rot: " + cameraRef.current.position + " " +  new Vector3(
+                cameraRef.current.rotation.x * rad2deg,
+                cameraRef.current.rotation.y * rad2deg,
+                cameraRef.current.rotation.z * rad2deg
+            ));
+        }
+    }
+
+    const refreshCamera = () => {
+        if (!shouldRecenterCamera.current) return;
+        console.log("Recentering Camera");
+        if (cameraRef.current && pathsRef.current.length > 0 && pathsChangedSinceLastRecenter.current) {
+            cameraViewAll(cameraRef, pathsRef.current);
+            shouldRecenterCamera.current = false;
+        } else {
+            let str = "\n";
+            if (!cameraRef.current) str+= "cameraRef.current is null\n";
+            if (pathsRef.current.length === 0) str+= "paths.length is 0\n";
+            if (!pathsChangedSinceLastRecenter.current) str+= "pathsChangedSinceLastRecenter.current is false\n";
+            console.log("Camera not ready yet because of: " + str);
+            setTimeout(refreshCamera, 200);
+        }
+    }
+
+    const updatePaths = (newPaths: DollyPath[]) => {
+        console.log("Received paths");
+        setPaths(newPaths);
+    }
+
+    const refreshScene = () => {
+        console.log("Refreshing Babylon Scene");
+        if (cameraRef.current) {
+            shouldRecenterCamera.current = true;
+            pathsChangedSinceLastRecenter.current = false;
+        }
+    }
+
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'r') {
+                resetCamera();
+            }
+            if (event.key === 'f') {
+                cameraViewAll(cameraRef, pathsRef.current);
+            }
+        }
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
+
     useEffect(() => {
         if (window?.ThreeDViewport?.onUpdatePoints) {
-            window.ThreeDViewport.onUpdatePoints((data: DollyPath[]) => {
-                setPaths(data);
-                // You can process your points and render something based on them.
-            });
+            window.ThreeDViewport.onUpdatePoints(updatePaths);
         }
     }, []);
 
-    // useEffect(() => {
-    //     console.log("Paths:");
-    //     console.log(paths);
-    // }, [paths]);
+    useEffect(() => {
+        if (window?.ThreeDViewport?.onRefreshViewport) {
+            window.ThreeDViewport.onRefreshViewport(refreshScene);
+        }
+    }, []);
+
+    useEffect(() => {
+        console.log("Paths: " + paths.length);
+        pathsChangedSinceLastRecenter.current = true;
+        pathsRef.current = paths;
+    }, [paths]);
 
     return (
         <div className='flex justify-center items-center h-screen'>
@@ -185,14 +260,16 @@ const BabylonScene: FC = () => { // Have local state for the points (or any data
                                 if (camera && paths.length > 0) {
                                     cameraRef.current = camera;
                                     configureCamera(cameraRef);
-                                    cameraViewAll(cameraRef, paths);
                                     isCameraConfiguredYet.current = true;
                                 }
+                            }
+                            if (shouldRecenterCamera.current) {
+                                refreshCamera();
                             }
                         }}
                         position={new Vector3(-1, 1, -1)}
                     />
-                    <hemisphericLight name="light1" intensity={0.7} direction={Vector3.Up()} />
+                    {/* <hemisphericLight name="light1" intensity={0.7} direction={Vector3.Up()} /> */}
                     <OriginAxes />
                     <utilityLayerRenderer>
                         {
@@ -204,11 +281,15 @@ const BabylonScene: FC = () => { // Have local state for the points (or any data
                                     color={Color3.White()} />
                             ))
                         }
-                        {
-                            paths.map((path, index) => (
-                                <CameraPath key={index} points={path.Points} color={Color3.Teal()} />
-                            ))
-                        }
+                        {paths.map((path, index) => {
+                            if (path.Points.length < 2) return null;
+                            return (
+                                <CameraPath
+                                    key={index}
+                                    points={path.Points}
+                                    color={pathColors[index % pathColors.length]}
+                                />
+                            )})}
                     </utilityLayerRenderer>
                 </Scene>
             </Engine>
