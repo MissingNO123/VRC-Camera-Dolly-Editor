@@ -119,6 +119,13 @@ function cameraViewAll(cameraRef: React.MutableRefObject<BabylonFreeCamera | nul
 
     let center = Vector3.Center(min, max);
     let distance = Vector3.Distance(min, max);
+
+    if (distance < 0.1) {  // if the distance is too small, zoom out a lil
+        distance = 0.1;
+        max = center.add(new Vector3(0.05, 0.05, 0.05));
+        min = center.add(new Vector3(-0.05, -0.05, -0.05));
+    }
+
     cameraRef.current.position = center.add(new Vector3(0, distance / 2, distance));
     cameraRef.current.setTarget(center);
 
@@ -165,7 +172,7 @@ const BabylonScene: FC = () => { // Have local state for the points (or any data
     const isCameraConfiguredYet = React.useRef(false);
     const shouldRecenterCamera = React.useRef(true);
     const pathsChangedSinceLastRecenter = React.useRef(false);
-    const [showOriginAxes, setShowOriginAxes] = React.useState(false);
+    const [showOriginAxes, setShowOriginAxes] = React.useState(true);
 
     const pathColors = [
         Color3.FromHexString("#37b2f9"), // light blue
