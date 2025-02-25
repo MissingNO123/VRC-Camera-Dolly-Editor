@@ -1,6 +1,6 @@
 {
   "name": "vrc-camera-dolly-editor",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "main": "dist-electron/index.js",
   "author": {
