@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-windows:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -24,8 +24,7 @@ jobs:
         run: npm run dist:win
 
       - name: Zip Windows output
-        run: |
-          zip -r VRCCameraDollyEditor-${{ github.ref_name }}-Windows.zip dist/win-unpacked
+        run: powershell -command "Compress-Archive -Path dist/win-unpacked -DestinationPath VRCCameraDollyEditor-${{ github.ref_name }}-Windows.zip"
 
       - name: Create draft release
         id: create_release
