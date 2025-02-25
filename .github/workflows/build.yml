@@ -36,7 +36,7 @@ jobs:
         run: npm run build
     
       - name: Package Electron app
-        run: electron-builder --win --dir
+        run: npm run pack:win
 
       - name: Zip Windows output
         run: powershell -command "Compress-Archive -Path dist/win-unpacked -DestinationPath VRCCameraDollyEditor-${{ github.ref_name }}-Windows.zip"
