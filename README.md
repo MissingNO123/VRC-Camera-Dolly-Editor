@@ -23,8 +23,8 @@ Lets you view and configure points for VRChat camera paths. Currently very WIP
 - Auto-import when VRChat exports
   
 ## Screenshots
-![image](https://github.com/user-attachments/assets/e8681096-0342-45f1-a778-1ab0f5b33e67)
-![image](https://github.com/user-attachments/assets/88a7f026-527a-4178-9e94-3392f7ef69a8)
+![image](https://github.com/user-attachments/assets/e1a8aa46-2a74-44be-9ffb-2f7c1d93da4e)
+![image](https://github.com/user-attachments/assets/e0bf46ba-f9b8-487e-9db1-2c351b8ded2c)
 
 __                                          __
 
