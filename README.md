@@ -2,7 +2,7 @@
 
 Lets you view and configure points for VRChat camera paths. Currently very WIP
 
-### Download: [>> CLICK HERE <<](https://github.com/MissingNO123/VRC-Camera-Dolly-Editor/releases/download/0.1.0/VRCCameraDollyEditor-0.1.0-Windows.zip)
+### Download: [>> CLICK HERE <<](https://github.com/MissingNO123/VRC-Camera-Dolly-Editor/releases/download/v0.2.0/VRCCameraDollyEditor-v0.2.0-Windows.zip)
 
 ## Features
 
