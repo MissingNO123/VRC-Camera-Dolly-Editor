@@ -1,0 +1,35 @@
+name: Update README Download Link to Most Recent Release Tag
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update-readme:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          # Ensures we have all commit history and tags
+          fetch-depth: 0
+
+      - name: Get latest tag
+        id: get_tag
+        shell: bash
+        run: |
+          latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
+          echo "::set-output name=tag::$latestTag"
+
+      - name: Update README link dynamically
+        shell: powershell
+        run: |
+          $version = "${{ steps.get_tag.outputs.tag }}"
+          $newLink = "https://github.com/MissingNO123/VRC-Camera-Dolly-Editor/releases/download/$version/VRCCameraDollyEditor-$version-Windows.zip"
+          (Get-Content README.md) -replace '\[>> CLICK HERE <<\]\((.*?)\)',"[>> CLICK HERE <<]($newLink)" | Set-Content README.md
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add README.md
+          git commit -m "Update README download link to $version"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
