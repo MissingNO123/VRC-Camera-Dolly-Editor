@@ -195,7 +195,7 @@ function App() {
                             <button
                                 onClick={openFile}
                                 className="m-1 p-2 bg-blue-500 hover:bg-blue-600 text-white rounded">
-                                Import Paths
+                                Open Paths
                             </button>
                             <button onClick={saveFile} className="p-2 m-1 bg-green-500 hover:bg-green-600 text-white rounded">
                                 Save

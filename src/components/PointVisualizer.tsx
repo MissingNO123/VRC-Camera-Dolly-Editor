@@ -4,7 +4,9 @@ import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector';
 import { Engine, Scene } from 'react-babylonjs';
 import useStore from '../store';
 import { DollyPath, DollyPoint } from '../types/Dolly';
-import { FreeCamera as BabylonFreeCamera, FreeCameraMouseInput } from '@babylonjs/core';
+import { FreeCamera as BabylonFreeCamera, EventState, FreeCameraMouseInput, Texture } from '@babylonjs/core';
+import mouseRightIcon from '../assets/icons/Keyboard & Mouse/Default/mouse_right_outline.png';
+import { Vector2WithInfo } from '@babylonjs/gui';
 
 // class UnityLikeCameraInput extends BaseCameraPointersInput {
 //     public camera: BabylonFreeCamera;
@@ -164,6 +166,8 @@ const configureCamera = (cameraRef: React.MutableRefObject<BabylonFreeCamera | n
 
 }
 
+
+
 const BabylonScene: FC = () => { // Have local state for the points (or any data passed from the main window) 
     const paths: DollyPath[] = useStore(state => state.paths);
     const pathsRef = React.useRef<DollyPath[]>(paths);
@@ -305,8 +309,71 @@ const BabylonScene: FC = () => { // Have local state for the points (or any data
                                     points={path.Points}
                                     color={pathColors[index % pathColors.length]}
                                 />
-                            )})}
+                            )
+                        })}
                     </utilityLayerRenderer>
+                    <adtFullscreenUi name="controls">
+                        <stackPanel 
+                        name="toolbar" 
+                        width="100%" 
+                        height="40px" 
+                        background="rgba(0,0,0,0.3)"
+                        verticalAlignment={1}
+                        isVertical={false}
+                        >
+                            <rectangle name="wasd" width="65px" height="35px" thickness={2} verticalAlignment={2} background="#000" cornerRadius={5} paddingTop={5} paddingBottom={5} paddingLeft={10} paddingRight={0} color="gray">
+                                <textBlock text="WASD" color="white" fontSize={14}/>
+                            </rectangle>
+                            <rectangle name="wasdLabel" width="45px" height="35px" thickness={0} verticalAlignment={2}>
+                                <textBlock text="Move" color="white" fontSize={14} />
+                            </rectangle>
+
+                            <rectangle name="qe" width="45px" height="35px" thickness={2} verticalAlignment={2} background="#000" cornerRadius={5} paddingTop={5} paddingBottom={5} paddingLeft={10} paddingRight={0} color="gray">
+                                <textBlock text="Q/E" color="white" fontSize={14}/>
+                            </rectangle>
+                            <rectangle name="qeLabel" width="65px" height="30px" thickness={0} verticalAlignment={2}>
+                                <textBlock text="Up/Down" color="white" fontSize={14} />
+                            </rectangle>
+
+                            <rectangle name="rmb" width="35px" height="35px" thickness={2} verticalAlignment={2} background="#000" cornerRadius={5} paddingTop={5} paddingBottom={5} paddingLeft={10} color="gray">
+                                <babylon-image name='rmbIcon' source={mouseRightIcon} />
+                            </rectangle>
+                            <rectangle name="rmbLabel" width="40px" height="30px" thickness={0} verticalAlignment={2}>
+                                <textBlock text="Look" color="white" fontSize={14} />
+                            </rectangle>
+
+                            <rectangle name="r" width="35px" height="35px" thickness={2} verticalAlignment={2} background="#000" cornerRadius={5} paddingTop={5} paddingBottom={5} paddingLeft={10} color="gray"
+                            onPointerClickObservable={() => resetCamera()}
+                            >
+                                <textBlock text="R" color="white" fontSize={14}/>
+                            </rectangle>
+                            <rectangle name="rLabel" width="45px" height="35px" thickness={0} verticalAlignment={2}>
+                                <textBlock text="Reset" color="white" fontSize={14} />
+                            </rectangle>
+
+                            <rectangle name="f" width="35px" height="35px" thickness={2} verticalAlignment={2} background="#000" cornerRadius={5} paddingTop={5} paddingBottom={5} paddingLeft={10} color="gray"
+                            onPointerClickObservable={() => cameraViewAll(cameraRef, paths)}
+                            >
+                                <textBlock text="F" color="white" fontSize={14}/>
+                            </rectangle>
+                            <rectangle name="fLabel" width="45px" height="30px" thickness={0} verticalAlignment={2}>
+                                <textBlock text="Focus" color="white" fontSize={14} />
+                            </rectangle>
+
+                            <rectangle name="o" width="35px" height="35px" thickness={2} verticalAlignment={2} background="#000" cornerRadius={5} paddingTop={5} paddingBottom={5} paddingLeft={10} color="gray"
+                            onPointerClickObservable={() => setShowOriginAxes(prev => !prev)}
+                            >
+                                <textBlock text="O" color="white" fontSize={14}/>
+                            </rectangle>
+                            <rectangle name="oLabel" width="45px" height="30px" thickness={0} verticalAlignment={2}>
+                                <textBlock text="Axes" color="white" fontSize={14} />
+                            </rectangle>
+                            
+
+                            {/* <textBlock text="WASD: Move | RMB: Look | R: Reset Camera | F: Focus on all paths | O: Toggle Origin Axes" color="white" fontSize={12} /> */}
+                        </stackPanel>
+                    </adtFullscreenUi>
+                        
                 </Scene>
             </Engine>
         </div>
